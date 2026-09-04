@@ -35,7 +35,7 @@ async function hostedTryOn(person:File,garmentUrl:string){
 
 async function freeTryOn(person:File,product:(typeof products)[number]){
  const token=process.env.HF_TOKEN;
- const app=await Client.connect("yisol/IDM-VTON",token?.startsWith("hf_")?{token:token as `hf_${string}`}:{ });
+ const app=await Client.connect("https://yisol-idm-vton.hf.space",token?.startsWith("hf_")?{token:token as `hf_${string}`}:{ });
  try{
   const result=await app.predict("/tryon",[{background:handle_file(person),layers:[],composite:null},handle_file(product.imageUrl),product.name,true,false,20,42]);
   const output=(result.data as Array<{url?:string;path?:string}>)[0],outputUrl=output?.url||(output?.path?.startsWith("http")?output.path:"");
