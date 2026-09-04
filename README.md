@@ -15,6 +15,6 @@ Refresh public catalogue data with `npm run scrape`. The scraper is rate-limited
 
 For local AI setup and service contracts, see [`ai-service/README.md`](ai-service/README.md). CatVTON is used only for this non-commercial demo under CC BY-NC-SA 4.0. Profile measurements provide styling guidance, not guaranteed sizing accuracy.
 
-For hosted try-on, set `FASHN_API_KEY` in the deployment environment. Production uses FASHN Try-On v1.6 when this secret is present; local development continues to use `AI_SERVICE_URL` (default `http://127.0.0.1:8001`). Never expose either secret in browser code.
+Production try-on uses the public Hugging Face IDM-VTON ZeroGPU Space. Set a free `HF_TOKEN` in the deployment environment for authenticated daily quota; anonymous testing has a smaller shared allowance. If `FASHN_API_KEY` is also set, FASHN Try-On v1.6 becomes the fallback when free capacity is unavailable. Local development continues to use `AI_SERVICE_URL` (default `http://127.0.0.1:8001`). Never expose these secrets in browser code.
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/TODO.md`](docs/TODO.md), and [`docs/DECISIONS.md`](docs/DECISIONS.md).
