@@ -7,3 +7,5 @@ The separate FastAPI service exposes `POST /try-on` and runs CatVTON locally on 
 `POST /visual-search` uses CLIP ViT-B/32. Catalogue image embeddings are cached on disk under a content signature; only the uploaded query is embedded per search. The Next.js API route validates uploads and keeps the Python service URL server-side.
 
 `POST /stylist` extracts budget/category constraints locally, reduces the catalogue to 12 candidates, then asks Ollama to rank three and explain the choice. If Ollama is offline, filtered catalogue results remain usable and are labelled as a fallback.
+
+`POST /looks` asks the same local provider to assemble a three-piece cross-brand outfit. Server-side validation enforces category coverage, distinct brands and budget; a deterministic catalogue combination is the fallback.

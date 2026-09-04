@@ -71,6 +71,14 @@ def shortlist(prompt:str,catalogue:list[dict[str,Any]])->list[dict[str,Any]]:
  filtered=[product for product in catalogue if (not budget or product.get("price",0)<=budget) and (not category or product.get("category")==category)]
  return sorted(filtered or catalogue,key=lambda product:(product.get("price",0),product.get("brand","")))[:12]
 
+def fallback_look(catalogue:list[dict[str,Any]],budget:int|None)->list[dict[str,Any]]:
+ groups=[{"Shirts","T-Shirts"},{"Jeans","Trousers"},{"Jackets"}];chosen=[];brands=set()
+ for categories in groups:
+  options=sorted((item for item in catalogue if item.get("category") in categories and item.get("brand") not in brands),key=lambda item:item.get("price",0))
+  if options: chosen.append(options[0]);brands.add(options[0].get("brand"))
+ if budget and sum(item.get("price",0) for item in chosen)>budget:return []
+ return chosen
+
 def image(file:UploadFile)->Image.Image:
  try:return Image.open(file.file)
  except Exception as exc:raise HTTPException(415,"Invalid image") from exc
@@ -91,6 +99,24 @@ def stylist(request:StylistRequest):
   return {"ids":ids,"note":str(answer.get("note","Here are three catalogue matches for you.")),"mode":"ollama"}
  except (requests.RequestException,KeyError,ValueError,json.JSONDecodeError):
   return {"ids":[item["id"] for item in options[:3]],"note":"Ollama is offline, so these are the closest catalogue matches based on your budget and requested category.","mode":"catalogue"}
+
+@app.post("/looks")
+def looks(request:StylistRequest):
+ numbers=[int(value.replace(",","")) for value in re.findall(r"\d[\d,]*",request.prompt)];budget=max(numbers) if numbers else None
+ candidates=[]
+ for category in ("Shirts","T-Shirts","Jeans","Trousers","Jackets"):
+  candidates.extend(sorted((item for item in request.catalogue if item.get("category")==category),key=lambda item:item.get("price",0))[:3])
+ fallback=fallback_look(candidates,budget)
+ if len(fallback)<3:return {"ids":[],"note":"No complete three-piece look fits that budget yet.","mode":"catalogue"}
+ compact=[{key:item.get(key) for key in ("id","brand","name","category","price","colors")} for item in candidates]
+ instruction="Create one coherent outfit with exactly 3 supplied ids: one Shirts/T-Shirts, one Jeans/Trousers, and one Jackets item. All brands must differ and total must respect any stated budget. Return JSON only: ids array and one-sentence note."
+ try:
+  response=requests.post(f"{os.getenv('OLLAMA_URL','http://127.0.0.1:11434')}/api/chat",json={"model":os.getenv("OLLAMA_MODEL","llama3.2:3b"),"stream":False,"format":"json","messages":[{"role":"system","content":instruction},{"role":"user","content":f"Request: {request.prompt}\nCandidates: {json.dumps(compact)}"}]},timeout=60);response.raise_for_status();answer=json.loads(response.json()["message"]["content"])
+  by_id={item["id"]:item for item in candidates};selected=[by_id[item] for item in answer.get("ids",[]) if item in by_id][:3];categories=[item["category"] for item in selected]
+  valid=len(selected)==3 and len({item["brand"] for item in selected})==3 and any(item in {"Shirts","T-Shirts"} for item in categories) and any(item in {"Jeans","Trousers"} for item in categories) and "Jackets" in categories and (not budget or sum(item["price"] for item in selected)<=budget)
+  if not valid:raise ValueError("Invalid look")
+  return {"ids":[item["id"] for item in selected],"note":str(answer.get("note","A balanced cross-brand look.")),"mode":"ollama"}
+ except (requests.RequestException,KeyError,ValueError,json.JSONDecodeError):return {"ids":[item["id"] for item in fallback],"note":"A budget-aware cross-brand look assembled from the catalogue while Ollama is offline.","mode":"catalogue"}
 
 @app.post("/visual-search")
 def visual_search(query:UploadFile=File(...),catalogue:str=Form(...),top_k:int=Form(6)):

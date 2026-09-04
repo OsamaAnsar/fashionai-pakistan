@@ -7,3 +7,4 @@
 - CatVTON was selected for the non-commercial VTON demo because its official implementation documents approximately 8 GB VRAM at 1024×768. This integration uses 512×768 FP16 and serial inference for the RTX 3070 Laptop target.
 - Visual search uses local CLIP ViT-B/32 on CPU, preserving GPU memory for CatVTON. Catalogue embeddings persist by catalogue signature; query images are never stored.
 - The stylist filters to at most 12 products before calling Ollama `llama3.2:3b`; it never sends the full catalogue and provides an explicit deterministic fallback.
+- Cross-brand looks enforce one top, one bottom and one jacket from three distinct brands, then validate the LLM output and total budget before display.
