@@ -57,7 +57,7 @@ class CatVTON:
   person=resize_and_crop(person.convert("RGB"),(512,768));garment=resize_and_padding(garment.convert("RGB"),(512,768))
   mask=self.mask_processor.blur(self.masker(person,category)["mask"],blur_factor=9)
   generator=self.torch.Generator(device="cuda").manual_seed(seed)
-  return self.pipeline(image=person,condition_image=garment,mask=mask,num_inference_steps=30,guidance_scale=2.5,generator=generator)[0]
+  return self.pipeline(image=person,condition_image=garment,mask=mask,height=768,width=512,num_inference_steps=30,guidance_scale=2.5,generator=generator)[0]
 
 class StylistRequest(BaseModel):
  prompt:str

@@ -18,3 +18,5 @@ For the local stylist, install Ollama and run `ollama pull llama3.2:3b`. `POST /
 `POST /wardrobe-advice` accepts a prompt, catalogue and wardrobe metadata. It sends Ollama at most 20 owned-item descriptions and 12 market candidates; wardrobe images remain local.
 
 CatVTON code and checkpoints are CC BY-NC-SA 4.0 and restricted here to a non-commercial demo.
+
+Windows setup installs the CUDA 12.1 PyTorch wheel explicitly and pins Diffusers/PEFT versions verified with Python 3.12. The first try-on downloads several gigabytes of cached model weights.
