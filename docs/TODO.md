@@ -6,4 +6,5 @@
 - [x] Milestone 4: CLIP visual search with cached catalogue embeddings
 - [x] Milestone 5: catalogue-first local AI stylist
 - [x] Milestone 6: budget-aware cross-brand looks
-- [ ] Milestone 7: personal wardrobe
+- [x] Milestone 7: private wardrobe and wardrobe-aware advice
+- [ ] Milestone 8: reusable digital twin profile

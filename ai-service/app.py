@@ -63,6 +63,9 @@ class StylistRequest(BaseModel):
  prompt:str
  catalogue:list[dict[str,Any]]
 
+class WardrobeRequest(StylistRequest):
+ wardrobe:list[dict[str,Any]]
+
 def shortlist(prompt:str,catalogue:list[dict[str,Any]])->list[dict[str,Any]]:
  text=prompt.lower();numbers=[int(value.replace(",","")) for value in re.findall(r"\d[\d,]*",text)]
  budget=max(numbers) if numbers else None
@@ -117,6 +120,17 @@ def looks(request:StylistRequest):
   if not valid:raise ValueError("Invalid look")
   return {"ids":[item["id"] for item in selected],"note":str(answer.get("note","A balanced cross-brand look.")),"mode":"ollama"}
  except (requests.RequestException,KeyError,ValueError,json.JSONDecodeError):return {"ids":[item["id"] for item in fallback],"note":"A budget-aware cross-brand look assembled from the catalogue while Ollama is offline.","mode":"catalogue"}
+
+@app.post("/wardrobe-advice")
+def wardrobe_advice(request:WardrobeRequest):
+ options=shortlist(request.prompt,request.catalogue);compact=[{key:item.get(key) for key in ("id","brand","name","category","price","colors")} for item in options]
+ owned=[{key:item.get(key) for key in ("category","color","description")} for item in request.wardrobe[:20]]
+ instruction="Recommend exactly 3 supplied market product ids that complement the user's owned wardrobe. Do not recommend buying an item they already own. Return JSON only with ids array and one friendly sentence in note. Never invent ids."
+ try:
+  response=requests.post(f"{os.getenv('OLLAMA_URL','http://127.0.0.1:11434')}/api/chat",json={"model":os.getenv("OLLAMA_MODEL","llama3.2:3b"),"stream":False,"format":"json","messages":[{"role":"system","content":instruction},{"role":"user","content":f"Question: {request.prompt}\nOwned wardrobe: {json.dumps(owned)}\nMarket shortlist: {json.dumps(compact)}"}]},timeout=60);response.raise_for_status();answer=json.loads(response.json()["message"]["content"]);allowed={item["id"] for item in options};ids=[item for item in answer.get("ids",[]) if item in allowed][:3]
+  if not ids:raise ValueError("No valid recommendations")
+  return {"ids":ids,"note":str(answer.get("note","These pieces complement your wardrobe.")),"mode":"ollama"}
+ except (requests.RequestException,KeyError,ValueError,json.JSONDecodeError):return {"ids":[item["id"] for item in options[:3]],"note":"Ollama is offline, so these are catalogue matches filtered from your question; start Ollama for wardrobe-aware reasoning.","mode":"catalogue"}
 
 @app.post("/visual-search")
 def visual_search(query:UploadFile=File(...),catalogue:str=Form(...),top_k:int=Form(6)):

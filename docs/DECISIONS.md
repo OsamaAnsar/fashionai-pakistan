@@ -8,3 +8,4 @@
 - Visual search uses local CLIP ViT-B/32 on CPU, preserving GPU memory for CatVTON. Catalogue embeddings persist by catalogue signature; query images are never stored.
 - The stylist filters to at most 12 products before calling Ollama `llama3.2:3b`; it never sends the full catalogue and provides an explicit deterministic fallback.
 - Cross-brand looks enforce one top, one bottom and one jacket from three distinct brands, then validate the LLM output and total budget before display.
+- Wardrobe photos stay in local storage; only category, colour and description metadata may be included in the 20-item Ollama context.
