@@ -75,5 +75,5 @@ export async function POST(request:Request){
    if(process.env.FASHN_API_KEY)return await hostedTryOn(person,product.imageUrl);
    throw new Error(`${errorMessage(freeError,"Free AI is busy.")} Free ZeroGPU capacity is limited; try again shortly.`);
   }
- }catch(error){return NextResponse.json({error:errorMessage(error,"The AI try-on service is temporarily unavailable.")},{status:503});}
+ }catch(error){console.error("try-on provider error",error);return NextResponse.json({error:errorMessage(error,"The AI try-on service is temporarily unavailable.")},{status:503});}
 }
