@@ -1,2 +1,3 @@
 import Catalogue from "@/components/catalogue";
-export default function Home(){return <Catalogue/>}
+import PhotoStudio from "@/components/photo-studio";
+export default function Home(){return <><Catalogue/><PhotoStudio/></>}

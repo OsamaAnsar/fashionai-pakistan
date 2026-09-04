@@ -1,3 +1,3 @@
 # Architecture
 
-Next.js App Router renders a client-side catalogue backed by typed seed data. `Catalogue` owns search, filters and the product-detail modal. No backend, database or AI is included in Milestone 1.
+Next.js App Router renders a typed client catalogue. Route handlers validate, store, serve and delete one local fitting-room photo. No database or AI is included yet.
