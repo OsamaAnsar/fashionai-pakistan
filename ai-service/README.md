@@ -9,4 +9,6 @@ python -m uvicorn app:app --app-dir ai-service --port 8001
 
 Submit multipart fields `person`, `garment`, optional `category` (`upper`, `lower`, `overall`) and optional `seed`. Output is a PNG. Generated images are not retained by this service.
 
+`POST /visual-search` accepts `query`, a JSON `catalogue` containing product IDs and image URLs, and optional `top_k`. CLIP catalogue embeddings are persisted in `storage/embeddings`; query images are not stored. The first search downloads the CLIP model and builds the index.
+
 CatVTON code and checkpoints are CC BY-NC-SA 4.0 and restricted here to a non-commercial demo.

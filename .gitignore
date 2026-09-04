@@ -39,6 +39,7 @@ storage/uploads/
 vendor/
 __pycache__/
 *.pyc
+storage/embeddings/
 
 # typescript
 *.tsbuildinfo
