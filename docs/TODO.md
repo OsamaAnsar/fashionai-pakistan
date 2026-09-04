@@ -8,3 +8,4 @@
 - [x] Milestone 6: budget-aware cross-brand looks
 - [x] Milestone 7: private wardrobe and wardrobe-aware advice
 - [x] Milestone 8: reusable local style and measurement profile
+- [x] Fitting-room UI connected to CatVTON generation

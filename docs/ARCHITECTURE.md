@@ -13,3 +13,5 @@ The separate FastAPI service exposes `POST /try-on` and runs CatVTON locally on 
 Wardrobe route handlers persist images and a small JSON index locally. `POST /wardrobe-advice` sends at most 20 owned-item metadata records—never their images—plus a 12-product market shortlist to Ollama.
 
 The reusable digital-twin profile is a local JSON record of measurements, fit, brand sizes and style preferences. Server routes attach it to stylist requests; it is guidance only and never claims sizing accuracy.
+
+The fitting-room UI calls a Next.js `/api/try-on` proxy with stored photo and catalogue IDs. The server resolves both trusted images, forwards multipart data to CatVTON, and streams the unpersisted PNG back for a private before/after preview.

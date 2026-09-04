@@ -10,3 +10,4 @@
 - Cross-brand looks enforce one top, one bottom and one jacket from three distinct brands, then validate the LLM output and total budget before display.
 - Wardrobe photos stay in local storage; only category, colour and description metadata may be included in the 20-item Ollama context.
 - The digital twin is positioned as preference and visual guidance, not sizing prediction; its local profile is included in stylist, look and wardrobe prompts.
+- Try-on accepts only server-stored photo names and seeded catalogue IDs; generated previews are returned with `no-store` and remain browser-memory only.

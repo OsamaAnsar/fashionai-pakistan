@@ -9,6 +9,7 @@ import "./looks.css";
 import "./look-action.css";
 import "./wardrobe.css";
 import "./digital-twin.css";
+import "./try-on.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
