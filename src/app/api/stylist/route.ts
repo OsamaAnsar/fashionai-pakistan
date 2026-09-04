@@ -1,0 +1,3 @@
+import {NextResponse} from "next/server";
+import {products} from "@/lib/products";
+export async function POST(request:Request){const body=await request.json();if(typeof body.prompt!=="string"||!body.prompt.trim())return NextResponse.json({error:"Tell the stylist what you need."},{status:400});try{const response=await fetch(`${process.env.AI_SERVICE_URL||"http://127.0.0.1:8001"}/stylist`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:body.prompt,catalogue:products}),cache:"no-store"});const result=await response.json();return NextResponse.json(response.ok?result:{error:result.detail||"Stylist failed."},{status:response.status})}catch{return NextResponse.json({error:"Start the local AI service to use the stylist."},{status:503})}}

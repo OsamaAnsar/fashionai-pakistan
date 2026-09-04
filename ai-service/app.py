@@ -1,4 +1,4 @@
-import hashlib, io, json, os, sys, threading
+import hashlib, io, json, os, re, sys, threading
 from pathlib import Path
 from typing import Any
 import numpy as np
@@ -6,6 +6,7 @@ import requests
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import Response
 from PIL import Image
+from pydantic import BaseModel
 
 app=FastAPI(title="Drape PK Try-On",version="0.1.0")
 lock=threading.Lock(); backend=None; search_backend=None
@@ -58,12 +59,38 @@ class CatVTON:
   generator=self.torch.Generator(device="cuda").manual_seed(seed)
   return self.pipeline(image=person,condition_image=garment,mask=mask,num_inference_steps=30,guidance_scale=2.5,generator=generator)[0]
 
+class StylistRequest(BaseModel):
+ prompt:str
+ catalogue:list[dict[str,Any]]
+
+def shortlist(prompt:str,catalogue:list[dict[str,Any]])->list[dict[str,Any]]:
+ text=prompt.lower();numbers=[int(value.replace(",","")) for value in re.findall(r"\d[\d,]*",text)]
+ budget=max(numbers) if numbers else None
+ categories={"shirt":"Shirts","t-shirt":"T-Shirts","tee":"T-Shirts","jacket":"Jackets","jean":"Jeans","trouser":"Trousers","pant":"Trousers"}
+ category=next((value for keyword,value in categories.items() if keyword in text),None)
+ filtered=[product for product in catalogue if (not budget or product.get("price",0)<=budget) and (not category or product.get("category")==category)]
+ return sorted(filtered or catalogue,key=lambda product:(product.get("price",0),product.get("brand","")))[:12]
+
 def image(file:UploadFile)->Image.Image:
  try:return Image.open(file.file)
  except Exception as exc:raise HTTPException(415,"Invalid image") from exc
 
 @app.get("/health")
 def health():return {"ok":True,"tryOn":"CatVTON","tryOnLoaded":backend is not None,"visualSearch":"CLIP ViT-B/32","searchLoaded":search_backend is not None}
+
+@app.post("/stylist")
+def stylist(request:StylistRequest):
+ if not request.prompt.strip() or not request.catalogue:raise HTTPException(400,"Prompt and catalogue are required")
+ options=shortlist(request.prompt,request.catalogue)
+ compact=[{key:item.get(key) for key in ("id","brand","name","category","price","colors")} for item in options]
+ instruction="You are a concise Pakistani fashion stylist. Select exactly 3 product ids from the supplied shortlist. Return JSON only with keys ids (array) and note (one friendly sentence). Never invent ids."
+ try:
+  response=requests.post(f"{os.getenv('OLLAMA_URL','http://127.0.0.1:11434')}/api/chat",json={"model":os.getenv("OLLAMA_MODEL","llama3.2:3b"),"stream":False,"format":"json","messages":[{"role":"system","content":instruction},{"role":"user","content":f"Request: {request.prompt}\nShortlist: {json.dumps(compact)}"}]},timeout=60)
+  response.raise_for_status();answer=json.loads(response.json()["message"]["content"]);allowed={item["id"] for item in options};ids=[item for item in answer.get("ids",[]) if item in allowed][:3]
+  if not ids:raise ValueError("No valid product ids")
+  return {"ids":ids,"note":str(answer.get("note","Here are three catalogue matches for you.")),"mode":"ollama"}
+ except (requests.RequestException,KeyError,ValueError,json.JSONDecodeError):
+  return {"ids":[item["id"] for item in options[:3]],"note":"Ollama is offline, so these are the closest catalogue matches based on your budget and requested category.","mode":"catalogue"}
 
 @app.post("/visual-search")
 def visual_search(query:UploadFile=File(...),catalogue:str=Form(...),top_k:int=Form(6)):

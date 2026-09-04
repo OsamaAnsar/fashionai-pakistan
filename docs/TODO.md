@@ -4,4 +4,5 @@
 - [x] Milestone 2: private user photo upload
 - [x] Milestone 3: CatVTON virtual try-on service
 - [x] Milestone 4: CLIP visual search with cached catalogue embeddings
-- [ ] Milestone 5: AI stylist
+- [x] Milestone 5: catalogue-first local AI stylist
+- [ ] Milestone 6: cross-brand looks

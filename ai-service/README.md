@@ -11,4 +11,6 @@ Submit multipart fields `person`, `garment`, optional `category` (`upper`, `lowe
 
 `POST /visual-search` accepts `query`, a JSON `catalogue` containing product IDs and image URLs, and optional `top_k`. CLIP catalogue embeddings are persisted in `storage/embeddings`; query images are not stored. The first search downloads the CLIP model and builds the index.
 
+For the local stylist, install Ollama and run `ollama pull llama3.2:3b`. `POST /stylist` accepts a prompt plus catalogue JSON, filters to 12 candidates before inference, and returns three product IDs with a short explanation. Override `OLLAMA_URL` or `OLLAMA_MODEL` if needed.
+
 CatVTON code and checkpoints are CC BY-NC-SA 4.0 and restricted here to a non-commercial demo.
