@@ -35,7 +35,7 @@ async function hostedTryOn(person:File,garmentUrl:string){
 async function freeTryOn(person:File,product:(typeof products)[number]){
  const base="https://yisol-idm-vton.hf.space",authorization:Record<string,string>={},session=Math.random().toString(36).slice(2);
  if(process.env.HF_TOKEN)authorization.Authorization=`Bearer ${process.env.HF_TOKEN}`;
- const files=new FormData();files.append("files",person,person.name);
+ const files=new FormData();files.append("files",new Blob([await person.arrayBuffer()],{type:person.type}),person.name||"person.jpg");
  const uploadedResponse=await fetch(`${base}/upload`,{method:"POST",headers:authorization,body:files,cache:"no-store"});
  const uploaded=await uploadedResponse.json().catch(()=>[]);
  if(!uploadedResponse.ok||!uploaded[0])throw new Error("Free AI could not receive the photo.");
