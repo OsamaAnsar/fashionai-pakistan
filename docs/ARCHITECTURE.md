@@ -11,3 +11,5 @@ The separate FastAPI service exposes `POST /try-on` and runs CatVTON locally on 
 `POST /looks` asks the same local provider to assemble a three-piece cross-brand outfit. Server-side validation enforces category coverage, distinct brands and budget; a deterministic catalogue combination is the fallback.
 
 Wardrobe route handlers persist images and a small JSON index locally. `POST /wardrobe-advice` sends at most 20 owned-item metadata records—never their images—plus a 12-product market shortlist to Ollama.
+
+The reusable digital-twin profile is a local JSON record of measurements, fit, brand sizes and style preferences. Server routes attach it to stylist requests; it is guidance only and never claims sizing accuracy.

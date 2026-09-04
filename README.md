@@ -11,6 +11,6 @@ npm install
 npm run dev
 ```
 
-For local AI setup and the `POST /try-on` contract, see [`ai-service/README.md`](ai-service/README.md). CatVTON is used only for this non-commercial demo under CC BY-NC-SA 4.0.
+For local AI setup and service contracts, see [`ai-service/README.md`](ai-service/README.md). CatVTON is used only for this non-commercial demo under CC BY-NC-SA 4.0. Profile measurements provide styling guidance, not guaranteed sizing accuracy.
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/TODO.md`](docs/TODO.md), and [`docs/DECISIONS.md`](docs/DECISIONS.md).

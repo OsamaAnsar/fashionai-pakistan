@@ -41,6 +41,7 @@ __pycache__/
 *.pyc
 storage/embeddings/
 storage/wardrobe/
+storage/profile.json
 
 # typescript
 *.tsbuildinfo

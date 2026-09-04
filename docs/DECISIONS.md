@@ -9,3 +9,4 @@
 - The stylist filters to at most 12 products before calling Ollama `llama3.2:3b`; it never sends the full catalogue and provides an explicit deterministic fallback.
 - Cross-brand looks enforce one top, one bottom and one jacket from three distinct brands, then validate the LLM output and total budget before display.
 - Wardrobe photos stay in local storage; only category, colour and description metadata may be included in the 20-item Ollama context.
+- The digital twin is positioned as preference and visual guidance, not sizing prediction; its local profile is included in stylist, look and wardrobe prompts.
