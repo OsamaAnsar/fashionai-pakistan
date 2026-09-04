@@ -1,6 +1,6 @@
 # Architecture
 
-Next.js App Router renders a typed client catalogue. Route handlers validate, store, serve and delete one local fitting-room photo.
+Next.js App Router renders a typed, cached catalogue sourced from public official-brand Shopify feeds. A manual rate-limited scraper normalizes five categories and rejects suspiciously small refreshes. Route handlers validate, store, serve and delete one local fitting-room photo.
 
 The separate FastAPI service exposes `POST /try-on` and runs CatVTON locally on CUDA. It lazy-loads FP16 weights, normalizes inputs to 512×768, generates one request at a time, and returns an unretained PNG. This keeps GPU dependencies and non-commercial model licensing isolated from the web app.
 

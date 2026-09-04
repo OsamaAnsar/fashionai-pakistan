@@ -2,14 +2,16 @@
 
 **One fitting room. Every brand.**
 
-A portfolio demo for multi-brand Pakistani fashion discovery and local AI virtual try-on. It includes 60 typed catalogue items, responsive editorial browsing, filters, product details, a private photo fitting room, and a CatVTON-powered FastAPI service sized for an 8 GB CUDA GPU.
+A portfolio demo for multi-brand Pakistani fashion discovery and local AI virtual try-on. It includes 75 cached official-brand listings, responsive editorial browsing, filters, product details, a private photo fitting room, and a CatVTON-powered FastAPI service sized for an 8 GB CUDA GPU.
 
-The current catalogue is illustrative: names, prices and imagery are demo data and must not be treated as live inventory.
+Catalogue data is periodically scraped from public official-brand Shopify feeds and cached for reliability. Prices and availability can change; purchase links always return to the source brand.
 
 ```bash
 npm install
 npm run dev
 ```
+
+Refresh public catalogue data with `npm run scrape`. The scraper is rate-limited, removes duplicates, normalizes categories, and keeps the previous cache if fewer than 40 valid products are found.
 
 For local AI setup and service contracts, see [`ai-service/README.md`](ai-service/README.md). CatVTON is used only for this non-commercial demo under CC BY-NC-SA 4.0. Profile measurements provide styling guidance, not guaranteed sizing accuracy.
 
