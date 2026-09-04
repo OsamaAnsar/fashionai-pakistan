@@ -1,6 +1,5 @@
 import {NextResponse} from "next/server";
 import {products} from "@/lib/products";
-import {Client,handle_file} from "@gradio/client";
 
 export const runtime="nodejs";
 export const maxDuration=60;
@@ -34,16 +33,26 @@ async function hostedTryOn(person:File,garmentUrl:string){
 }
 
 async function freeTryOn(person:File,product:(typeof products)[number]){
- const token=process.env.HF_TOKEN;
- const app=await Client.connect("https://yisol-idm-vton.hf.space",token?.startsWith("hf_")?{token:token as `hf_${string}`}:{ });
- try{
-  const result=await app.predict("/tryon",[{background:handle_file(person),layers:[],composite:null},handle_file(product.imageUrl),product.name,true,false,20,42]);
-  const output=(result.data as Array<{url?:string;path?:string}>)[0],outputUrl=output?.url||(output?.path?.startsWith("http")?output.path:"");
-  if(!outputUrl)throw new Error("Free AI returned no image.");
-  const image=await fetch(outputUrl,{cache:"no-store"});
-  if(!image.ok)throw new Error("Free AI output could not be downloaded.");
-  return new NextResponse(await image.arrayBuffer(),{headers:{"Content-Type":image.headers.get("content-type")||"image/png","Cache-Control":"private, no-store","X-AI-Provider":"Hugging Face ZeroGPU"}});
- }finally{app.close();}
+ const base="https://yisol-idm-vton.hf.space",authorization:Record<string,string>={},session=Math.random().toString(36).slice(2);
+ if(process.env.HF_TOKEN)authorization.Authorization=`Bearer ${process.env.HF_TOKEN}`;
+ const files=new FormData();files.append("files",person,person.name);
+ const uploadedResponse=await fetch(`${base}/upload`,{method:"POST",headers:authorization,body:files,cache:"no-store"});
+ const uploaded=await uploadedResponse.json().catch(()=>[]);
+ if(!uploadedResponse.ok||!uploaded[0])throw new Error("Free AI could not receive the photo.");
+ const file=(path:string,url?:string)=>({path,url,orig_name:person.name,meta:{_type:"gradio.FileData"}});
+ const data=[{background:file(uploaded[0]),layers:[],composite:null},file(product.imageUrl,product.imageUrl),product.name,true,false,20,42];
+ const joined=await fetch(`${base}/queue/join`,{method:"POST",headers:{...authorization,"Content-Type":"application/json"},body:JSON.stringify({data,fn_index:2,trigger_id:25,session_hash:session}),cache:"no-store"});
+ if(!joined.ok)throw new Error(joined.status===503?"Free AI queue is full.":"Free AI could not start the request.");
+ const events=await fetch(`${base}/queue/data?session_hash=${session}`,{headers:authorization,cache:"no-store"});
+ if(!events.ok)throw new Error("Free AI queue connection failed.");
+ const messages=(await events.text()).split("\n").filter(line=>line.startsWith("data: ")).map(line=>{try{return JSON.parse(line.slice(6))}catch{return null}}).filter(Boolean);
+ const completed=messages.find(message=>message.msg==="process_completed");
+ if(!completed?.success)throw new Error(errorMessage(completed?.output?.error,"Free AI generation failed."));
+ const outputUrl=completed.output?.data?.[0]?.url;
+ if(!outputUrl)throw new Error("Free AI returned no image.");
+ const image=await fetch(outputUrl,{headers:authorization,cache:"no-store"});
+ if(!image.ok)throw new Error("Free AI output could not be downloaded.");
+ return new NextResponse(await image.arrayBuffer(),{headers:{"Content-Type":image.headers.get("content-type")||"image/png","Cache-Control":"private, no-store","X-AI-Provider":"Hugging Face ZeroGPU"}});
 }
 
 async function localTryOn(person:File,product:(typeof products)[number],serviceUrl:string){
