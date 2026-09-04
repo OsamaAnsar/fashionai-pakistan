@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 storage/uploads/
+vendor/
+__pycache__/
+*.pyc
 
 # typescript
 *.tsbuildinfo
