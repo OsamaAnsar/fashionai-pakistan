@@ -1,0 +1,41 @@
+/* Shared editorial theme overrides for feature sections. */
+.photo-studio{background:var(--paper-deep);border-color:var(--line)}
+.photo-studio>div:first-child>span,.photo-studio h2 i,.photo-studio li:before,.dropzone>button b{color:var(--accent)}
+.photo-studio>div:first-child>p,.dropzone>button small{color:var(--muted)}
+.photo-studio>div:first-child>p{font-size:15px}
+.photo-studio ul{font-size:12px}
+.dropzone{background:rgba(255,253,248,.72);border-color:#93897d}
+.dropzone.has-photo{box-shadow:var(--shadow)}
+
+.visual-search{background:var(--ink);color:var(--paper)}
+.search-intro>span,.search-intro h2 i{color:var(--gold)}
+.search-intro>p{color:#bdb4a8;font-size:15px}
+.search-intro button{background:var(--gold);color:var(--ink)}
+.search-intro button:hover{background:var(--paper)}
+
+.ai-stylist{background:var(--paper);color:var(--ink)}
+.ai-stylist header>span,.ai-stylist h2 i{color:var(--accent)}
+.ai-stylist textarea{border-color:var(--line);background:var(--white)}
+.stylist-picks b{background:var(--gold)}
+
+.cross-look{background:var(--gold);color:var(--ink)}
+.look-copy h2 i{color:var(--accent-deep)}
+.look-copy input{background:#f1d791;border-color:var(--ink)}
+.look-total a{background:var(--accent-deep)}
+
+.wardrobe{background:var(--paper-deep);color:var(--ink)}
+.wardrobe header>span,.wardrobe h2 i{color:var(--accent)}
+.wardrobe-add input,.wardrobe-add select,.wardrobe-ask input{background:var(--white);border-color:var(--line)}
+
+.digital-twin{background:var(--accent-deep);color:var(--paper)}
+.digital-twin h2 i{color:var(--gold)}
+.digital-twin fieldset{border-color:#b96a5d}
+.digital-twin input,.digital-twin select{background:var(--paper);color:var(--ink)}
+.digital-twin form>button{background:var(--gold);color:var(--ink)}
+
+.try-controls button,.try-result>button{background:var(--accent)}
+
+.photo-studio h2,.search-intro h2,.ai-stylist h2,.look-copy h2,.wardrobe h2,.digital-twin h2{letter-spacing:-.03em}
+.photo-studio>div:first-child>span,.search-intro>span,.ai-stylist header>span,.look-copy>span,.wardrobe header>span,.digital-twin header>span{font-family:var(--font-geist-mono),monospace;font-size:11px;font-weight:600}
+
+@media(max-width:700px){.photo-studio,.visual-search,.ai-stylist,.cross-look,.wardrobe,.digital-twin{padding-top:76px;padding-bottom:76px}}
